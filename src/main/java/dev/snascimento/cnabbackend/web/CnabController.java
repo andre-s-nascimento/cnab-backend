@@ -1,6 +1,11 @@
 package dev.snascimento.cnabbackend.web;
 
 import java.io.IOException;
+
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +24,7 @@ public class CnabController {
 
   @PostMapping(value = "upload")
   public String upload(@RequestParam("file") MultipartFile file)
-      throws IllegalStateException, IOException {
+      throws IllegalStateException, IOException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
     cnabService.uploadCnabFile(file);
 
     return "Processamento iniciado!";
