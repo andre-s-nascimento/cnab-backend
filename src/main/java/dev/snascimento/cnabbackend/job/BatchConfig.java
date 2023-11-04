@@ -1,4 +1,4 @@
-package dev.snascimento.cnabbackend;
+package dev.snascimento.cnabbackend.job;
 
 import java.math.BigDecimal;
 import javax.sql.DataSource;
@@ -20,6 +20,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import dev.snascimento.cnabbackend.domain.Transacao;
+import dev.snascimento.cnabbackend.domain.TransacaoCNAB;
 
 @Configuration
 public class BatchConfig {
@@ -76,13 +79,12 @@ public class BatchConfig {
               null,
               item.tipo(),
               null,
-              null,
+              item.valor().divide(BigDecimal.valueOf(100)),
               item.cpf(),
               item.cartao(),
               null,
               item.donoDaLoja().trim(),
               item.nomeDaLoja().trim())
-          .withValor(item.valor().divide(BigDecimal.valueOf(100)))
           .withData(item.data())
           .withHora(item.hora());
     };
