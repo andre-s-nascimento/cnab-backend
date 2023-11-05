@@ -1,5 +1,7 @@
 package dev.snascimento.cnabbackend.job;
 
+import dev.snascimento.cnabbackend.entity.Transacao;
+import dev.snascimento.cnabbackend.entity.TransacaoCNAB;
 import java.math.BigDecimal;
 import javax.sql.DataSource;
 import org.springframework.batch.core.Job;
@@ -22,13 +24,9 @@ import org.springframework.batch.item.file.transform.Range;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import dev.snascimento.cnabbackend.domain.Transacao;
-import dev.snascimento.cnabbackend.domain.TransacaoCNAB;
 
 @Configuration
 public class BatchConfig {
@@ -63,7 +61,8 @@ public class BatchConfig {
 
   @StepScope
   @Bean
-  FlatFileItemReader<TransacaoCNAB> reader(@Value("#{jobParameters['cnabFile']}") Resource resource) {
+  FlatFileItemReader<TransacaoCNAB> reader(
+      @Value("#{jobParameters['cnabFile']}") Resource resource) {
     return new FlatFileItemReaderBuilder<TransacaoCNAB>()
         .name("reader")
         .resource(resource)
@@ -80,21 +79,20 @@ public class BatchConfig {
 
   @Bean
   ItemProcessor<TransacaoCNAB, Transacao> processor() {
-    return item -> {
-      // Wither pattern
-      return new Transacao(
-              null,
-              item.tipo(),
-              null,
-              item.valor().divide(BigDecimal.valueOf(100)),
-              item.cpf(),
-              item.cartao(),
-              null,
-              item.donoDaLoja().trim(),
-              item.nomeDaLoja().trim())
-          .withData(item.data())
-          .withHora(item.hora());
-    };
+    return item ->
+        // Wither pattern
+        new Transacao(
+                null,
+                item.tipo(),
+                null,
+                item.valor().divide(BigDecimal.valueOf(100)),
+                item.cpf(),
+                item.cartao(),
+                null,
+                item.donoDaLoja().trim(),
+                item.nomeDaLoja().trim())
+            .withData(item.data())
+            .withHora(item.hora());
   }
 
   @Bean
@@ -116,7 +114,7 @@ public class BatchConfig {
   }
 
   @Bean
-  JobLauncher jobLauncherAsync(JobRepository jobRepository) throws Exception{
+  JobLauncher jobLauncherAsync(JobRepository jobRepository) throws Exception {
     var jobLauncher = new TaskExecutorJobLauncher();
     jobLauncher.setJobRepository(jobRepository);
     jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
