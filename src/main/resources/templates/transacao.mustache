@@ -1,0 +1,11 @@
+{{>header}}
+
+<h1>Relatorio de Transações</h1>
+<div> Lista das Transações </div>
+{{#transacaoList}}
+<b> Nome da Loja: </b>{{nomeDaLoja}} <br/>
+<b> Total: </b>{{ total }} <br/>
+<b> Transações: </b>{{transacoes}}<br/>
+{{/transacaoList}}
+
+{{>footer}}
